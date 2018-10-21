@@ -239,6 +239,7 @@ function onTick() {
             CloseShort();
         }
 
+
     }
 
     exchange.GetAccount();
