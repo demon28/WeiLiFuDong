@@ -227,7 +227,7 @@ function onTick() {
         Type = Position[0].Type;
         var Type_Value = Type == "0" ? "多仓" : "空仓";
 
-        Log("当前持仓[" + Type_Value + "]，持仓均价：" + Price + "====当前币价：" + exchange.GetTicker().Last + "===" + "持仓数量：" + Amount + "===" + "持仓盈亏：" + Profit + "  #0000FF");
+        Log("当前持仓[" + Type_Value + "]，持仓均价：" + Price + "====当前币价：" + _C(exchange.GetTicker).Last + "===" + "持仓数量：" + Amount + "===" + "持仓盈亏：" + Profit + "  #0000FF");
 
         //做多
         if (Type == "0") {
