@@ -42,7 +42,8 @@ function OpenOrder() {
     //设定开仓方向：0代表空仓，1代表多仓
     if (OpenWay == "PD_LONG") {
         exchange.SetDirection("buy");
-        var tickprice = _C(exchange.GetTicker).Sell + Slippage_Open_Long; //做多的话价格卖一价高一点
+        //开多仓，就是买币，买币用买一价
+        var tickprice = _C(exchange.GetTicker).Buy + Slippage_Open_Long; //做多的话价格卖一价高一点
 
 
         exchange.Buy(tickprice, Blance);   //买入开多
@@ -51,11 +52,13 @@ function OpenOrder() {
     } else {
 
         exchange.SetDirection("sell");
-        var tickprice = _C(exchange.GetTicker).Buy + Slippage_Open_Short; //做多的话价格买一价低一点
+        //开空仓就是卖币，卖就用卖一价
+        var tickprice = _C(exchange.GetTicker).Sell + Slippage_Open_Short; //做多的话价格买一价低一点
 
         exchange.Sell(tickprice, Blance);   //卖出开空
         Log("开仓做空:" + tickprice);
     }
+    //等待时间要稍微长一点，不然成交不了
     Sleep(open_wait);
     CancelPendingOrders();  //成交不了则取消所有订单
 
@@ -79,7 +82,8 @@ function CloseLong() {
     if (win_ratio >= profit) {
 
         exchange.SetDirection("closebuy");
-        var tickPrice = _C(exchange.GetTicker).Buy + Slippage_Close_Long;  //滑价：做多比市场价便宜一点，卖出  吃单手续费太高
+        //要避免万3的手续费，平多仓就是 把币卖掉，卖币就用卖一价
+        var tickPrice = _C(exchange.GetTicker).Sell + Slippage_Close_Long;  //滑价：做多比市场价便宜一点，卖出  吃单手续费太高
 
         exchange.Sell(tickPrice, Position[0].Amount);  //卖出平多
         OpenWay = Long_Win_Font;   //赚了就继续这个方向开多 或者反方向开
@@ -97,7 +101,7 @@ function CloseLong() {
 
 
         exchange.SetDirection("closebuy");
-        var tickPrice = _C(exchange.GetTicker).Buy + Slippage_Close_Long;   //吃单手续费万3，加高一点变成挂单手续费只有万1
+        var tickPrice = _C(exchange.GetTicker).Sell + Slippage_Close_Long;   //吃单手续费万3，加高一点变成挂单手续费只有万1
 
         exchange.Sell(tickPrice, Position[0].Amount); //卖出平多
         OpenWay = Long_Loss_Font;   //亏了就继续这个方向开多 或者反方向开
@@ -129,7 +133,9 @@ function CloseShort() {
     if (win_ratio >= profit) {
 
         exchange.SetDirection("closesell");
-        var tickPrice = _C(exchange.GetTicker).Sell + Slippage_Close_Short;   //滑价：做空比市场买一价高一点 买入
+
+        //为避免万三手续费，卖空仓就是买币回来，买的话就挂单买一价
+        var tickPrice = _C(exchange.GetTicker).Buy + Slippage_Close_Short;   //滑价：做空比市场买一价高一点 买入
 
 
         exchange.Buy(tickPrice, Position[0].Amount);  //买入平空
@@ -146,7 +152,7 @@ function CloseShort() {
     if (loss_ratio >= loss) {
 
         exchange.SetDirection("closesell");
-        var tickPrice = _C(exchange.GetTicker).Sell + Slippage_Close_Short;
+        var tickPrice = _C(exchange.GetTicker).Buy + Slippage_Close_Short;
         exchange.Buy(tickPrice, Position[0].Amount);  //买入平空
 
         OpenWay = Short_Loss_Font;   //亏了则下次开仓为反方向 开空
